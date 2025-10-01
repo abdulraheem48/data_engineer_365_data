@@ -104,6 +104,33 @@
     .fullscreen-btn:hover {
       background: #0056b3;
     }
+
+    /* Quiz styles */
+    .question-box {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+    .option {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin: 8px 0;
+      cursor: pointer;
+      background: #fff;
+    }
+    .option.correct { background: #d4edda; border-color: #28a745; }
+    .option.wrong { background: #f8d7da; border-color: #dc3545; }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      display: none;
+    }
+    .result.success { background: #d4edda; color: #155724; }
+    .result.error { background: #f8d7da; color: #721c24; }
   </style>
 </head>
 <body>
@@ -112,7 +139,6 @@
   <div id="lessons"></div>
 </div>
 
-<!-- Empty lesson container (no default message) -->
 <div class="content" id="lessonContent"></div>
 
 <script>
@@ -138,16 +164,42 @@
       ]
     },
     {
+      type: "quiz",
+      title: "Exercise",
+      questions: [
+        {
+          text: "Which of the following is a database language?",
+          options: [
+            {text: "SQL", correct: true},
+            {text: "HTML", correct: false},
+            {text: "CSS", correct: false}
+          ],
+          multiple: false
+        },
+        {
+          text: "Which of these are RDBMS examples?",
+          options: [
+            {text: "MySQL", correct: true},
+            {text: "Oracle", correct: true},
+            {text: "Python", correct: false}
+          ],
+          multiple: true
+        },
+        {
+          text: "SQL stands for?",
+          options: [
+            {text: "Structured Query Language", correct: true},
+            {text: "Simple Query Language", correct: false}
+          ],
+          multiple: false
+        }
+      ]
+    },
+    {
       type: "video",
       title: "Why MySQL?",
       time: "01:57",
       file: "https://drive.google.com/file/d/1RFnMy1R9yhhR2HKRamoZ0LnDujgQjmjQ/preview"
-    },
-    {
-      type: "video",
-      title: "Introduction to Databases",
-      time: "04:44",
-      file: "https://drive.google.com/file/d/15IpJ-tTMgG9fjM9p6xul1-AtyaVuAjky/preview"
     }
   ];
 
@@ -158,29 +210,116 @@
     const div = document.createElement("div");
     div.classList.add("lesson");
     div.innerHTML = `
-        <div class="lesson-info" onclick="loadLesson(${index})">
-          <div class="lesson-title">✔ ${lesson.title}</div>
-          <div class="lesson-time">▶ Lesson - ${lesson.time} min</div>
-        </div>
-        ${lesson.resources ? `
+      <div class="lesson-info" onclick="loadLesson(${index})">
+        <div class="lesson-title">✔ ${lesson.title}</div>
+        ${lesson.time ? `<div class="lesson-time">▶ Lesson - ${lesson.time} min</div>` : ""}
+        ${lesson.type==="quiz" ? `<div class="lesson-time">📝 ${lesson.questions.length} questions</div>` : ""}
+      </div>
+      ${lesson.resources ? `
         <div class="resource-btn">
           <button onclick="toggleDropdown(event, ${index})">📂 Resources ▾</button>
           <div class="resource-dropdown" id="dropdown-${index}">
             ${lesson.resources.map(r => `<a href="${r.link}" target="_blank" download>${r.name}</a>`).join("")}
           </div>
-        </div>
-        ` : ""}
-      `;
+        </div>` : ""}
+    `;
     lessonsContainer.appendChild(div);
   });
 
   function loadLesson(index) {
     const lesson = lessons[index];
-    lessonContent.innerHTML = `
+    if (lesson.type === "video") {
+      lessonContent.innerHTML = `
         <h2>${lesson.title}</h2>
         <iframe id="videoFrame" src="${lesson.file}" allow="autoplay; fullscreen"></iframe>
         <button class="fullscreen-btn" onclick="openFullscreen()">⛶ Fullscreen</button>
       `;
+    } else if (lesson.type === "quiz") {
+      startQuiz(lesson);
+    }
+  }
+
+  // QUIZ LOGIC
+  let currentQ = 0, questions = [];
+
+  function startQuiz(lesson){
+    currentQ = 0;
+    questions = lesson.questions;
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    const q = questions[currentQ];
+    lessonContent.innerHTML = `
+      <h2>Exercise</h2>
+      <div class="question-box">
+        <p><b>Q${currentQ+1}:</b> ${q.text}</p>
+        ${q.options.map((opt,i)=>`
+          <div class="option" onclick="selectOption(${i})">${opt.text}</div>
+        `).join("")}
+        <div id="resultBox" class="result"></div>
+      </div>
+    `;
+  }
+
+  let selected = [];
+  function selectOption(i){
+    const q = questions[currentQ];
+    if(!q.multiple){ selected=[i]; }
+    else {
+      if(selected.includes(i)) selected=selected.filter(x=>x!==i);
+      else selected.push(i);
+    }
+    renderSelections();
+  }
+
+  function renderSelections(){
+    const optionDivs=document.querySelectorAll(".option");
+    optionDivs.forEach((div,i)=>{
+      div.style.borderColor = selected.includes(i) ? "#007bff" : "#ddd";
+    });
+    checkAnswer(); // auto check
+  }
+
+  function checkAnswer(){
+    const q = questions[currentQ];
+    const resultBox=document.getElementById("resultBox");
+    let allCorrect=true;
+
+    const optionDivs=document.querySelectorAll(".option");
+    optionDivs.forEach((div,i)=>{
+      if(selected.includes(i)){
+        if(q.options[i].correct){ div.classList.add("correct"); }
+        else { div.classList.add("wrong"); allCorrect=false; }
+      }
+    });
+
+    if(q.multiple){
+      q.options.forEach((opt,i)=>{
+        if(opt.correct && !selected.includes(i)) allCorrect=false;
+      });
+    }
+
+    resultBox.style.display="block";
+    if(allCorrect){
+      resultBox.textContent="✅ Correct! Moving to next...";
+      resultBox.className="result success";
+      setTimeout(()=>nextQuestion(),1000);
+    } else {
+      resultBox.textContent="❌ Try again!";
+      resultBox.className="result error";
+    }
+    return allCorrect;
+  }
+
+  function nextQuestion(){
+    if(currentQ<questions.length-1){
+      currentQ++;
+      selected=[];
+      renderQuestion();
+    } else {
+      lessonContent.innerHTML = `<h2>Exercise Completed ✅</h2>`;
+    }
   }
 
   function toggleDropdown(event, index) {
@@ -198,11 +337,11 @@
     const iframe = document.getElementById("videoFrame");
     if (iframe.requestFullscreen) {
       iframe.requestFullscreen();
-    } else if (iframe.mozRequestFullScreen) { // Firefox
+    } else if (iframe.mozRequestFullScreen) {
       iframe.mozRequestFullScreen();
-    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari
+    } else if (iframe.webkitRequestFullscreen) {
       iframe.webkitRequestFullscreen();
-    } else if (iframe.msRequestFullscreen) { // IE/Edge
+    } else if (iframe.msRequestFullscreen) {
       iframe.msRequestFullscreen();
     }
   }
