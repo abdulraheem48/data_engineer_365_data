@@ -360,7 +360,7 @@
       document.querySelectorAll(".options").forEach(opt => {
         const p = opt.parentElement.id;
         if ((opt.dataset.answer === "true" && p === "trueBox") ||
-          (opt.dataset.answer === "false" && p === "falseBox"))
+            (opt.dataset.answer === "false" && p === "falseBox"))
           opt.classList.add("correct");
         else {
           opt.classList.add("incorrect");
