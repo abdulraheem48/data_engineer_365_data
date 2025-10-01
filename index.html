@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private Class - Data Engineer 365</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 350px;
+      background: #f9f9f9;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid #ddd;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      background: #fff;
+      overflow-y: auto;
+      position: relative;
+    }
+    .lesson {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .lesson:hover {
+      background: #f3f3f3;
+    }
+    .lesson-info {
+      max-width: 70%;
+      cursor: pointer;
+    }
+    .lesson-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .lesson-time {
+      font-size: 14px;
+      color: #555;
+    }
+    .resource-btn {
+      position: relative;
+    }
+    .resource-btn button {
+      background: #e0e0e0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .resource-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 36px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+      z-index: 100;
+      min-width: 200px;
+    }
+    .resource-dropdown a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: #333;
+    }
+    .resource-dropdown a:hover {
+      background: #f0f0f0;
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .fullscreen-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .fullscreen-btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h3>📘 Introduction to Databases, SQL, and MySQL</h3>
+  <div id="lessons"></div>
+</div>
+
+<div class="content" id="lessonContent">
+  <h2>Select a lesson from the left</h2>
+</div>
+
+<script>
+  const lessons = [
+    {
+      type: "video",
+      title: "Welcome to SQL",
+      time: "03:59",
+      file: "https://drive.google.com/file/d/1MmbU6UZayFXQFBNzfzuPg920mxyJ4pQ9/preview",
+      resources: [
+        {name: "⬇ SQL - Course Notes (PDF)", link: "https://drive.google.com/uc?export=download&id=1WbMQ05LoKPMco0JeGFLvregv862JD7lN"},
+        {name: "⬇ English Subtitles (.srt)", link: "https://drive.google.com/uc?export=download&id=SUBTITLE_FILE_ID1"}
+      ]
+    },
+    {
+      type: "video",
+      title: "Why SQL?",
+      time: "03:17",
+      file: "https://drive.google.com/file/d/1hf-V9tKuwTiq0dAm0mzlsMyGHV-4_k2h/preview",
+      resources: [
+        {name: "⬇ SQL FAQ (PDF)", link: "https://drive.google.com/uc?export=download&id=1OeMH0BehpQH4m2YEiOOVRmEC8aZ7sszT"},
+        {name: "⬇ Subtitles (.srt)", link: "https://drive.google.com/uc?export=download&id=SUBTITLE_FILE_ID2"}
+      ]
+    },
+    {
+      type: "video",
+      title: "Why MySQL?",
+      time: "01:57",
+      file: "https://drive.google.com/file/d/1RFnMy1R9yhhR2HKRamoZ0LnDujgQjmjQ/preview"
+    },
+    {
+      type: "video",
+      title: "Introduction to Databases",
+      time: "04:44",
+      file: "https://drive.google.com/file/d/15IpJ-tTMgG9fjM9p6xul1-AtyaVuAjky/preview"
+    }
+  ];
+
+  const lessonsContainer = document.getElementById("lessons");
+  const lessonContent = document.getElementById("lessonContent");
+
+  lessons.forEach((lesson, index) => {
+    const div = document.createElement("div");
+    div.classList.add("lesson");
+    div.innerHTML = `
+        <div class="lesson-info" onclick="loadLesson(${index})">
+          <div class="lesson-title">✔ ${lesson.title}</div>
+          <div class="lesson-time">▶ Lesson - ${lesson.time} min</div>
+        </div>
+        ${lesson.resources ? `
+        <div class="resource-btn">
+          <button onclick="toggleDropdown(event, ${index})">📂 Resources ▾</button>
+          <div class="resource-dropdown" id="dropdown-${index}">
+            ${lesson.resources.map(r => `<a href="${r.link}" target="_blank" download>${r.name}</a>`).join("")}
+          </div>
+        </div>
+        ` : ""}
+      `;
+    lessonsContainer.appendChild(div);
+  });
+
+  function loadLesson(index) {
+    const lesson = lessons[index];
+    lessonContent.innerHTML = `
+        <h2>${lesson.title}</h2>
+        <iframe id="videoFrame" src="${lesson.file}" allow="autoplay; fullscreen"></iframe>
+        <button class="fullscreen-btn" onclick="openFullscreen()">⛶ Fullscreen</button>
+      `;
+  }
+
+  function toggleDropdown(event, index) {
+    event.stopPropagation();
+    document.querySelectorAll(".resource-dropdown").forEach(d => d.style.display = "none");
+    const dropdown = document.getElementById(`dropdown-${index}`);
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  }
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".resource-dropdown").forEach(d => d.style.display = "none");
+  });
+
+  function openFullscreen() {
+    const iframe = document.getElementById("videoFrame");
+    if (iframe.requestFullscreen) {
+      iframe.requestFullscreen();
+    } else if (iframe.mozRequestFullScreen) { // Firefox
+      iframe.mozRequestFullScreen();
+    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari
+      iframe.webkitRequestFullscreen();
+    } else if (iframe.msRequestFullscreen) { // IE/Edge
+      iframe.msRequestFullscreen();
+    }
+  }
+</script>
+</body>
+</html>
