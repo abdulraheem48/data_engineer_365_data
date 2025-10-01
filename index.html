@@ -11,8 +11,6 @@
       display: flex;
       height: 100vh;
     }
-
-    /* Sidebar */
     .sidebar {
       width: 350px;
       background: #f9f9f9;
@@ -20,8 +18,6 @@
       overflow-y: auto;
       border-right: 1px solid #ddd;
     }
-
-    /* Main content */
     .content {
       flex: 1;
       padding: 20px;
@@ -29,8 +25,6 @@
       overflow-y: auto;
       position: relative;
     }
-
-    /* Lesson items */
     .lesson {
       display: flex;
       justify-content: space-between;
@@ -40,10 +34,13 @@
       border: 1px solid #ddd;
       border-radius: 6px;
       background: #fff;
-      cursor: pointer;
     }
     .lesson:hover {
       background: #f3f3f3;
+    }
+    .lesson-info {
+      max-width: 70%;
+      cursor: pointer;
     }
     .lesson-title {
       font-weight: bold;
@@ -53,8 +50,41 @@
       font-size: 14px;
       color: #555;
     }
-
-    /* Video */
+    .resource-btn {
+      position: relative;
+    }
+    .resource-btn button {
+      background: #e0e0e0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .resource-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 36px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+      z-index: 100;
+      min-width: 200px;
+    }
+    .resource-dropdown a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: #333;
+    }
+    .resource-dropdown a:hover {
+      background: #f0f0f0;
+    }
     iframe {
       width: 100%;
       height: 600px;
@@ -74,110 +104,6 @@
     .fullscreen-btn:hover {
       background: #0056b3;
     }
-
-    /* Quiz styles */
-    .quiz-container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .note {
-      color: #555;
-      font-size: 14px;
-      margin-bottom: 10px;
-      font-style: italic;
-    }
-    .option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      margin: 8px 0;
-      border: 2px solid #ccc;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .option:hover {
-      background: #f0f0f0;
-    }
-    .option.correct {
-      border-color: green;
-      background: #eaffea;
-    }
-    .option.wrong {
-      border-color: red;
-      background: #ffeaea;
-    }
-    .buttons {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    button {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: white;
-    }
-    .main-btn {
-      background: #007bff;
-    }
-    .skip {
-      background: #6c757d;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      font-weight: bold;
-      display: none;
-    }
-    .result.success {
-      background: #22c55e;
-      color: white;
-    }
-    .result.error {
-      background: #ef4444;
-      color: white;
-    }
-    .options {
-      display: inline-block;
-      margin: 10px 0;
-      padding: 10px 15px;
-      border: 2px solid #cbd5e1;
-      border-radius: 10px;
-      background: white;
-      color: black;
-      cursor: grab;
-    }
-    .options.correct {
-      border-color: #22c55e;
-    }
-    .options.incorrect {
-      border-color: #ef4444;
-    }
-    .container {
-      display: flex;
-      justify-content: space-around;
-      gap: 20px;
-    }
-    .box {
-      background: #1e293b;
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      width: 40%;
-      min-height: 200px;
-    }
-    .box h3 {
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 <body>
@@ -186,6 +112,7 @@
   <div id="lessons"></div>
 </div>
 
+<!-- Empty lesson container (no default message) -->
 <div class="content" id="lessonContent"></div>
 
 <script>
@@ -194,221 +121,90 @@
       type: "video",
       title: "Welcome to SQL",
       time: "03:59",
-      file: "https://drive.google.com/file/d/1MmbU6UZayFXQFBNzfzuPg920mxyJ4pQ9/preview"
+      file: "https://drive.google.com/file/d/1MmbU6UZayFXQFBNzfzuPg920mxyJ4pQ9/preview",
+      resources: [
+        {name: "⬇ SQL - Course Notes (PDF)", link: "https://drive.google.com/uc?export=download&id=1WbMQ05LoKPMco0JeGFLvregv862JD7lN"},
+        {name: "⬇ English Subtitles (.srt)", link: "https://drive.google.com/uc?export=download&id=SUBTITLE_FILE_ID1"}
+      ]
     },
     {
       type: "video",
       title: "Why SQL?",
       time: "03:17",
-      file: "https://drive.google.com/file/d/1hf-V9tKuwTiq0dAm0mzlsMyGHV-4_k2h/preview"
-    },
-    {
-      type: "exercise",
-      title: "Exercise",
-      time: "3 questions"
+      file: "https://drive.google.com/file/d/1hf-V9tKuwTiq0dAm0mzlsMyGHV-4_k2h/preview",
+      resources: [
+        {name: "⬇ SQL FAQ (PDF)", link: "https://drive.google.com/uc?export=download&id=1OeMH0BehpQH4m2YEiOOVRmEC8aZ7sszT"},
+        {name: "⬇ Subtitles (.srt)", link: "https://drive.google.com/uc?export=download&id=SUBTITLE_FILE_ID2"}
+      ]
     },
     {
       type: "video",
       title: "Why MySQL?",
       time: "01:57",
       file: "https://drive.google.com/file/d/1RFnMy1R9yhhR2HKRamoZ0LnDujgQjmjQ/preview"
+    },
+    {
+      type: "video",
+      title: "Introduction to Databases",
+      time: "04:44",
+      file: "https://drive.google.com/file/d/15IpJ-tTMgG9fjM9p6xul1-AtyaVuAjky/preview"
     }
   ];
 
   const lessonsContainer = document.getElementById("lessons");
   const lessonContent = document.getElementById("lessonContent");
 
-  lessons.forEach((lesson, i) => {
+  lessons.forEach((lesson, index) => {
     const div = document.createElement("div");
-    div.className = "lesson";
-    div.onclick = () => loadLesson(i);
+    div.classList.add("lesson");
     div.innerHTML = `
-      <div>
-        <div class="lesson-title">✔ ${lesson.title}</div>
-        <div class="lesson-time">${lesson.type === "exercise" ? `📌 ${lesson.time}` : `▶ Lesson - ${lesson.time} min`}</div>
-      </div>`;
+        <div class="lesson-info" onclick="loadLesson(${index})">
+          <div class="lesson-title">✔ ${lesson.title}</div>
+          <div class="lesson-time">▶ Lesson - ${lesson.time} min</div>
+        </div>
+        ${lesson.resources ? `
+        <div class="resource-btn">
+          <button onclick="toggleDropdown(event, ${index})">📂 Resources ▾</button>
+          <div class="resource-dropdown" id="dropdown-${index}">
+            ${lesson.resources.map(r => `<a href="${r.link}" target="_blank" download>${r.name}</a>`).join("")}
+          </div>
+        </div>
+        ` : ""}
+      `;
     lessonsContainer.appendChild(div);
   });
 
-  function loadLesson(i) {
-    const l = lessons[i];
-    if (l.type === "video") {
-      lessonContent.innerHTML = `
-        <h2>${l.title}</h2>
-        <iframe id="videoFrame" src="${l.file}" allow="autoplay; fullscreen"></iframe>
-        <button class="fullscreen-btn" onclick="openFullscreen()">⛶ Fullscreen</button>`;
-    } else if (l.type === "exercise") {
-      startQuiz();
-    }
+  function loadLesson(index) {
+    const lesson = lessons[index];
+    lessonContent.innerHTML = `
+        <h2>${lesson.title}</h2>
+        <iframe id="videoFrame" src="${lesson.file}" allow="autoplay; fullscreen"></iframe>
+        <button class="fullscreen-btn" onclick="openFullscreen()">⛶ Fullscreen</button>
+      `;
   }
+
+  function toggleDropdown(event, index) {
+    event.stopPropagation();
+    document.querySelectorAll(".resource-dropdown").forEach(d => d.style.display = "none");
+    const dropdown = document.getElementById(`dropdown-${index}`);
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  }
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".resource-dropdown").forEach(d => d.style.display = "none");
+  });
 
   function openFullscreen() {
     const iframe = document.getElementById("videoFrame");
-    if (iframe.requestFullscreen) iframe.requestFullscreen();
-  }
-
-  // QUIZ SECTION
-  const questions = [
-    {
-      type: "dragdrop",
-      text: "Categorize the following SQL characteristics into 'True' or 'False'.",
-      options: [
-        { text: "Writing SQL queries is referred to as 'querying the database.'", answer: "true" },
-        { text: "SQL is used for creating, manipulating, and sharing data.", answer: "true" },
-        { text: "SQL is only useful for small datasets.", answer: "false" },
-        { text: "SQL is only useful for web developers.", answer: "false" }
-      ]
-    },
-    {
-      type: "checkbox",
-      text: "Which of the following statements about SQL are true?",
-      options: [
-        { text: "SQL stands for Structured Query Language.", correct: true },
-        { text: "SQL is specifically designed for relational databases.", correct: true },
-        { text: "SQL is only used for creating web pages.", correct: false },
-        { text: "SQL is easy to learn but powerful.", correct: true },
-        { text: "SQL cannot be used for manipulating data.", correct: false }
-      ],
-      multiple: true,
-      note: "Please select more than one option"
-    },
-    {
-      type: "radio",
-      text: "Fill in the blanks: A query is a piece of ____ instructing the computer to execute a certain operation that will deliver ___________.",
-      options: [
-        { text: "Code; the desired output", correct: true },
-        { text: "Text; a database schema", correct: false },
-        { text: "Code; a database schema", correct: false },
-        { text: "Text; the desired output", correct: false }
-      ],
-      multiple: false
+    if (iframe.requestFullscreen) {
+      iframe.requestFullscreen();
+    } else if (iframe.mozRequestFullScreen) { // Firefox
+      iframe.mozRequestFullScreen();
+    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari
+      iframe.webkitRequestFullscreen();
+    } else if (iframe.msRequestFullscreen) { // IE/Edge
+      iframe.msRequestFullscreen();
     }
-  ];
-
-  let currentQ = 0, selected = [];
-
-  function startQuiz() {
-    lessonContent.innerHTML = `<div id="quizBox" class="quiz-container"></div>`;
-    loadQuestion();
-  }
-
-  function loadQuestion() {
-    const q = questions[currentQ];
-    const box = document.getElementById("quizBox");
-    box.innerHTML = `<h2>Question ${currentQ + 1}/${questions.length}</h2><p>${q.text}</p>`;
-    if (q.note) box.innerHTML += `<p class="note">${q.note}</p>`;
-    if (q.type === "dragdrop") {
-      box.innerHTML += `
-        <div class="container">
-          <div class="box" id="trueBox"><h3>True</h3></div>
-          <div class="box" id="falseBox"><h3>False</h3></div>
-        </div>`;
-      const optC = document.createElement("div");
-      q.options.forEach(o => {
-        const d = document.createElement("div");
-        d.className = "options";
-        d.innerText = o.text;
-        d.draggable = true;
-        d.dataset.answer = o.answer;
-        optC.appendChild(d);
-      });
-      box.appendChild(optC);
-    } else {
-      const optC = document.createElement("div"); optC.id = "options";
-      q.options.forEach((opt, i) => {
-        const d = document.createElement("label");
-        d.className = "option";
-        const input = document.createElement("input");
-        input.type = q.multiple ? "checkbox" : "radio";
-        input.name = "option";
-        input.value = i;
-        input.onclick = () => toggleSelect(i, q.multiple);
-        d.appendChild(input);
-        d.append(opt.text);
-        optC.appendChild(d);
-      });
-      box.appendChild(optC);
-    }
-    const btns = document.createElement("div");
-    btns.className = "buttons";
-    btns.innerHTML = `
-      <button class="main-btn" onclick="handleMainButton()">Check</button>
-      <button class="skip" onclick="nextQuestion()">Skip</button>`;
-    box.appendChild(btns);
-    box.appendChild(Object.assign(document.createElement("div"), { id: "resultBox", className: "result" }));
-    if (q.type === "dragdrop") initDragDrop();
-    selected = [];
-  }
-
-  function toggleSelect(i, multi) {
-    if (multi) {
-      selected.includes(i) ? selected = selected.filter(x => x !== i) : selected.push(i);
-    } else selected = [i];
-  }
-
-  function handleMainButton() {
-    const btn = document.querySelector(".main-btn");
-    if (btn.textContent === "Check") {
-      if (checkAnswer()) btn.textContent = "Continue";
-    } else nextQuestion();
-  }
-
-  function checkAnswer() {
-    const q = questions[currentQ]; let ok = true;
-    const res = document.getElementById("resultBox");
-    if (q.type === "dragdrop") {
-      document.querySelectorAll(".options").forEach(opt => {
-        const p = opt.parentElement.id;
-        if ((opt.dataset.answer === "true" && p === "trueBox") ||
-          (opt.dataset.answer === "false" && p === "falseBox"))
-          opt.classList.add("correct");
-        else {
-          opt.classList.add("incorrect");
-          ok = false;
-        }
-      });
-    } else {
-      document.querySelectorAll(".option").forEach((d, i) => {
-        if (selected.includes(i)) {
-          if (q.options[i].correct) d.classList.add("correct");
-          else {
-            d.classList.add("wrong");
-            ok = false;
-          }
-        } else if (q.options[i].correct && q.multiple) ok = false;
-      });
-    }
-    res.style.display = "block";
-    res.textContent = ok ? "👍 Correct! Continue." : "❌ Not quite right! Try again.";
-    res.className = "result " + (ok ? "success" : "error");
-    return ok;
-  }
-
-  function nextQuestion() {
-    if (currentQ < questions.length - 1) {
-      currentQ++;
-      loadQuestion();
-    } else {
-      lessonContent.innerHTML = "<h3>Exercise Finished ✅</h3>";
-    }
-  }
-
-  function initDragDrop() {
-    document.querySelectorAll(".options").forEach(opt => {
-      opt.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("text/plain", opt.innerText);
-        opt.classList.add("dragging");
-      });
-      opt.addEventListener("dragend", () => opt.classList.remove("dragging"));
-    });
-    ["trueBox", "falseBox"].forEach(id => {
-      const b = document.getElementById(id);
-      b.addEventListener("dragover", e => e.preventDefault());
-      b.addEventListener("drop", e => {
-        e.preventDefault();
-        b.appendChild(document.querySelector(".dragging"));
-      });
-    });
   }
 </script>
 </body>
